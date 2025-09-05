@@ -1,4 +1,3 @@
-console.log("O script está funcionando!");
 const firebaseConfig = {
   apiKey: "AIzaSyBPVD5yq5Pzb65ZADkjhqyaC06Vf9xPbYQ",
   authDomain: "show-do-milhao-79270.firebaseapp.com",
@@ -262,6 +261,7 @@ function checkAnswers(skip = false) {
         }, 3000);
     });
 }
+
 
 
 

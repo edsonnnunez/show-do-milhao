@@ -1,12 +1,12 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyBPVD5yq5Pzb65ZADkjhqyaC06Vf9xPbYQ",
+  apiKey: "AIzaSyBPVD5yq5Pzb65ZADkjhqyaC06Vf9xPbYQ",
   authDomain: "show-do-milhao-79270.firebaseapp.com",
   databaseURL: "https://show-do-milhao-79270-default-rtdb.firebaseio.com",
   projectId: "show-do-milhao-79270",
   storageBucket: "show-do-milhao-79270.firebasestorage.app",
   messagingSenderId: "94789466204",
-  appId: "1:94789466204:web:e7ad59dab239a0cad00e99",
-  measurementId: "G-BDPQQRPRWK"
+  appId: "1:94789466204:web:1adb4016324b3160d00e99",
+  measurementId: "G-21QGK1R8H1"
 };
 
 // Inicialize o Firebase
@@ -261,4 +261,5 @@ function checkAnswers(skip = false) {
         }, 3000);
     });
 }
+
 

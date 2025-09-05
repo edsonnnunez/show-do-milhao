@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const gameRef = database.ref('game');
 
-// As perguntas e respostas do seu documento
+// As 30 perguntas e respostas do jogo
 const questions = [
     { q: "1. A inovação em serviços não se restringe apenas à tecnologia, podendo envolver mudanças em processos, atendimento ao cliente e novos modelos de entrega de valor.", options: ["a) É falso, pois só existe inovação se houver tecnologia digital.", "b) É verdadeiro, pois envolve aspectos organizacionais, culturais e de relacionamento.", "c) É falso, já que inovação é apenas criar novos produtos físicos."], ans: "b" },
     { q: "2. Toda inovação em serviços exige grandes investimentos financeiros e infraestrutura tecnológica de ponta.", options: ["a) É verdadeiro, porque sem altos recursos não há inovação.", "b) É falso, pois muitas inovações surgem de ajustes simples e criativos.", "c) É verdadeiro, já que apenas multinacionais podem inovar."], ans: "b" },
@@ -40,7 +40,12 @@ const questions = [
     { q: "22. (TECNOLOGIA) Qual invenção é considerada o marco inicial da era da informação?", options: ["a) Telefone.", "b) Rádio.", "c) Computador."], ans: "c" },
     { q: "23. A integração de canais presencial, online e telefone é chamada de:", options: ["a) Multicanalidade simples.", "b) Omnicanalidade.", "c) Disrupção tecnológica."], ans: "b" },
     { q: "24. (TECNOLOGIA) Quem é considerado o criador da World Wide Web (WWW)?", options: ["a) Bill Gates.", "b) Tim Berners-Lee.", "c) Steve Jobs."], ans: "b" },
-    { q: "25. (TECNOLOGIA) Qual dessas tecnologias está diretamente ligada à Indústria 4.0?", options: ["a) Impressora gráfica.", "b) Internet das Coisas (IoT).", "c) Fax."], ans: "b" }
+    { q: "25. (TECNOLOGIA) Qual dessas tecnologias está diretamente ligada à Indústria 4.0?", options: ["a) Impressora gráfica.", "b) Internet das Coisas (IoT).", "c) Fax."], ans: "b" },
+    { q: "26. O que é um ecossistema de inovação?", options: ["a) Um ambiente natural para a criação de novas espécies.", "b) Uma rede de empresas, universidades e governo que colaboram para inovar.", "c) Um software que organiza ideias de inovação."], ans: "b" },
+    { q: "27. O que é Design Thinking?", options: ["a) Um método para criar designs de moda.", "b) Uma abordagem centrada no ser humano para a resolução de problemas.", "c) Apenas um brainstorming criativo."], ans: "b" },
+    { q: "28. O que é uma patente?", options: ["a) Um documento que permite a cópia de um produto.", "b) Um direito exclusivo concedido a um inventor por sua invenção.", "c) Uma licença para vender qualquer produto no mercado."], ans: "b" },
+    { q: "29. O termo 'startup' refere-se a uma empresa que:", options: ["a) É pequena e vende produtos artesanais.", "b) É recém-criada e busca um modelo de negócio repetível e escalável.", "c) É uma filial de uma grande empresa."], ans: "b" },
+    { q: "30. O que é a Indústria 4.0?", options: ["a) A quarta revolução agrícola.", "b) Uma nova era de revolução industrial focada em automação e dados.", "c) O uso de robôs em fábricas de carros."], ans: "b" }
 ];
 
 let currentQuestionIndex = 0;
@@ -54,85 +59,150 @@ const soundIncorrect = new Audio('sounds/incorrect.mp3');
 const soundCountdown = new Audio('sounds/countdown.mp3');
 const soundStart = new Audio('sounds/start_game.mp3');
 
-// Função para exibir a tela correta com base no dispositivo
-function showScreen() {
-    const isMobile = window.innerWidth <= 768;
-    document.getElementById('mobile-screen').style.display = isMobile ? 'flex' : 'none';
-    document.getElementById('tv-screen').style.display = isMobile ? 'none' : 'flex';
-    if (isMobile) {
-        document.getElementById('mobile-screen').classList.add('active');
-    } else {
-        document.getElementById('tv-screen').classList.add('active');
+// IDs das telas e botões
+const tvSections = {
+    intro: document.getElementById('intro-tv'),
+    game: document.getElementById('game-tv'),
+    pause: document.getElementById('pause-screen'),
+    betweenRounds: document.getElementById('between-rounds-screen'),
+    scoreboard: document.getElementById('scoreboard')
+};
+
+const mobileSections = {
+    login: document.getElementById('login-screen'),
+    game: document.getElementById('game-mobile')
+};
+
+// Funções de controle de tela
+function showSection(sectionId) {
+    for (const key in tvSections) {
+        tvSections[key].classList.remove('active');
+    }
+    if (tvSections[sectionId]) {
+        tvSections[sectionId].classList.add('active');
+    }
+    if (document.getElementById('control-buttons')) {
+        document.getElementById('control-buttons').style.display = (sectionId === 'game') ? 'block' : 'none';
     }
 }
-showScreen();
-window.addEventListener('resize', showScreen);
 
-// Geração do QR Code na TV
-const gameUrl = window.location.href;
-const qrcode = new QRCode(document.getElementById("qr-code"), {
-    text: gameUrl,
-    width: 200,
-    height: 200
-});
-
-// Conexão dos Jogadores (Celular)
-document.getElementById('join-game-btn').addEventListener('click', () => {
-    const playerName = document.getElementById('player-name-input').value.trim();
-    if (playerName) {
-        localStorage.setItem('playerName', playerName);
-        document.getElementById('login-screen').classList.remove('active');
-        document.getElementById('game-mobile').classList.add('active');
-        gameRef.child('players').child(playerName).set({ score: 0 });
+function showMobileSection(sectionId) {
+    for (const key in mobileSections) {
+        mobileSections[key].classList.remove('active');
     }
-});
+    if (mobileSections[sectionId]) {
+        mobileSections[sectionId].classList.add('active');
+    }
+}
 
-// Início do Jogo (TV)
-document.getElementById('start-game-btn').addEventListener('click', () => {
+// Funções de controle do jogo
+function startGame() {
     soundStart.play();
-    gameRef.update({
+    gameRef.set({
         status: 'playing',
         currentQuestion: 0,
-        countdown: 15
+        countdown: 15,
+        players: null,
+        answers: null
     });
+}
+
+function updateScoreboard(listId, playersData) {
+    const list = document.getElementById(listId);
+    list.innerHTML = '';
+    const sortedPlayers = Object.entries(playersData).sort((a, b) => b[1].score - a[1].score);
+    sortedPlayers.forEach(([name, data]) => {
+        const li = document.createElement('li');
+        li.textContent = `${name}: ${data.score} pontos`;
+        list.appendChild(li);
+    });
+}
+
+// Event Listeners dos botões de controle (APENAS NA TV)
+document.getElementById('start-game-btn').addEventListener('click', startGame);
+document.getElementById('pause-btn').addEventListener('click', () => {
+    gameRef.update({ status: 'paused' });
+});
+document.getElementById('resume-btn').addEventListener('click', () => {
+    gameRef.update({ status: 'playing' });
+});
+document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('skip-btn').addEventListener('click', () => {
+    // Pula a pergunta atual sem pontuar
+    if (gameStatus === 'playing') {
+        checkAnswers(true); // O 'true' indica para pular a pontuação
+    }
+});
+document.getElementById('next-round-btn').addEventListener('click', () => {
+    gameRef.update({ status: 'playing' });
 });
 
-// Lógica de atualização do jogo pelo Firebase (TV e Celular)
+// Lógica principal do jogo
 gameRef.on('value', (snapshot) => {
     const data = snapshot.val();
-    if (data) {
-        gameStatus = data.status;
-        currentQuestionIndex = data.currentQuestion;
-        players = data.players || {};
+    if (!data) return;
+    
+    gameStatus = data.status;
+    currentQuestionIndex = data.currentQuestion;
+    players = data.players || {};
 
+    if (window.innerWidth <= 768) { // Lógica para o celular
         if (gameStatus === 'playing') {
+            showMobileSection('game');
             const currentQ = questions[currentQuestionIndex];
-            if (window.innerWidth <= 768) { // Celular
-                document.getElementById('mobile-question-text').textContent = currentQ.q;
-                document.querySelectorAll('.mobile-option-btn').forEach((btn, index) => {
-                    btn.textContent = currentQ.options[index];
-                    btn.disabled = false;
-                });
-                document.getElementById('waiting-message').style.display = 'none';
-                document.getElementById('login-screen').classList.remove('active');
-                document.getElementById('game-mobile').classList.add('active');
-            } else { // TV
-                document.getElementById('intro-tv').classList.remove('active');
-                document.getElementById('game-tv').classList.add('active');
-                document.getElementById('question-number').textContent = `Questão ${currentQuestionIndex + 1}/${questions.length}`;
-                document.getElementById('question-text').textContent = currentQ.q;
-                document.getElementById('option-a').textContent = currentQ.options[0];
-                document.getElementById('option-b').textContent = currentQ.options[1];
-                document.getElementById('option-c').textContent = currentQ.options[2];
-                document.getElementById('countdown-timer').textContent = `Tempo: ${data.countdown}s`;
-            }
+            document.getElementById('mobile-question-text').textContent = currentQ.q;
+            document.querySelectorAll('.mobile-option-btn').forEach((btn, index) => {
+                btn.textContent = currentQ.options[index];
+                btn.disabled = false;
+            });
+            document.getElementById('waiting-message').style.display = 'none';
+        } else {
+            document.getElementById('waiting-message').textContent = 'Aguardando o próximo passo...';
+            document.getElementById('waiting-message').style.display = 'block';
+            document.querySelectorAll('.mobile-option-btn').forEach(b => b.disabled = true);
+        }
+    } else { // Lógica para a TV
+        if (gameStatus === 'playing') {
+            showSection('game');
+            const currentQ = questions[currentQuestionIndex];
+            document.getElementById('question-number').textContent = `Questão ${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById('question-text').textContent = currentQ.q;
+            document.getElementById('option-a').textContent = currentQ.options[0];
+            document.getElementById('option-b').textContent = currentQ.options[1];
+            document.getElementById('option-c').textContent = currentQ.options[2];
+            document.getElementById('countdown-timer').textContent = `Tempo: ${data.countdown}s`;
+        } else if (gameStatus === 'paused') {
+            showSection('pause');
+            updateScoreboard('partial-score-list', players);
+        } else if (gameStatus === 'between-rounds') {
+            showSection('betweenRounds');
+            updateScoreboard('round-score-list', players);
         } else if (gameStatus === 'finished') {
-            if (window.innerWidth > 768) {
-                showScoreboard();
-            }
+            showSection('scoreboard');
+            updateScoreboard('score-list', players);
         }
     }
 });
+
+// Lógica do cronômetro (APENAS NA TV)
+if (window.innerWidth > 768) {
+    gameRef.child('countdown').on('value', (snapshot) => {
+        const countdown = snapshot.val();
+        if (gameStatus === 'playing' && countdown !== null) {
+            document.getElementById('countdown-timer').textContent = `Tempo: ${countdown}s`;
+            if (countdown > 0) {
+                if (countdown <= 5) {
+                    soundCountdown.play();
+                }
+                setTimeout(() => {
+                    gameRef.child('countdown').set(countdown - 1);
+                }, 1000);
+            } else {
+                checkAnswers();
+            }
+        }
+    });
+}
 
 // Envio de Respostas (Celular)
 document.querySelectorAll('.mobile-option-btn').forEach(btn => {
@@ -150,66 +220,40 @@ document.querySelectorAll('.mobile-option-btn').forEach(btn => {
     });
 });
 
-// Lógica do Cronômetro e Pontuação (APENAS NA TV)
-if (window.innerWidth > 768) {
-    gameRef.child('countdown').on('value', (snapshot) => {
-        const countdown = snapshot.val();
-        if (countdown !== null) {
-            document.getElementById('countdown-timer').textContent = `Tempo: ${countdown}s`;
-            if (countdown > 0) {
-                if (countdown === 5) {
-                    soundCountdown.play();
-                }
-                setTimeout(() => {
-                    gameRef.child('countdown').set(countdown - 1);
-                }, 1000);
-            } else {
-                checkAnswers();
-            }
-        }
-    });
-}
-
-function checkAnswers() {
+function checkAnswers(skip = false) {
     const currentQuestion = questions[currentQuestionIndex];
     gameRef.child('answers').once('value', (snapshot) => {
         const answers = snapshot.val() || {};
-        for (const playerName in answers) {
-            const playerAnswer = answers[playerName].answer;
-            if (playerAnswer === currentQuestion.ans) {
-                soundCorrect.play();
-                const score = players[playerName] ? players[playerName].score + 1000 : 1000;
-                gameRef.child('players').child(playerName).update({ score: score });
-            } else {
-                soundIncorrect.play();
+        if (!skip) {
+            for (const playerName in answers) {
+                const playerAnswer = answers[playerName].answer;
+                if (playerAnswer === currentQuestion.ans) {
+                    soundCorrect.play();
+                    const score = players[playerName] ? players[playerName].score + 1000 : 1000;
+                    gameRef.child('players').child(playerName).update({ score: score });
+                } else {
+                    soundIncorrect.play();
+                }
             }
         }
-        // Exibe a resposta correta por 3 segundos na TV
+
+        const nextQuestionIndex = currentQuestionIndex + 1;
+        const endOfRound = (nextQuestionIndex === 10 || nextQuestionIndex === 20 || nextQuestionIndex === 30);
+        const endGame = (nextQuestionIndex >= questions.length);
+
         document.getElementById(`option-${currentQuestion.ans}`).classList.add('correct-answer-highlight');
         
         setTimeout(() => {
             document.getElementById(`option-${currentQuestion.ans}`).classList.remove('correct-answer-highlight');
             gameRef.child('answers').remove();
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                gameRef.update({ currentQuestion: currentQuestionIndex, countdown: 15 });
-            } else {
+            
+            if (endGame) {
                 gameRef.update({ status: 'finished' });
+            } else if (endOfRound) {
+                gameRef.update({ currentQuestion: nextQuestionIndex, status: 'between-rounds', countdown: null });
+            } else {
+                gameRef.update({ currentQuestion: nextQuestionIndex, countdown: 15 });
             }
         }, 3000);
-    });
-}
-
-// Placar Final (APENAS NA TV)
-function showScoreboard() {
-    document.getElementById('game-tv').classList.remove('active');
-    document.getElementById('scoreboard').classList.add('active');
-    const scoreList = document.getElementById('score-list');
-    scoreList.innerHTML = '';
-    const sortedPlayers = Object.entries(players).sort((a, b) => b[1].score - a[1].score);
-    sortedPlayers.forEach(([name, data]) => {
-        const li = document.createElement('li');
-        li.textContent = `${name}: ${data.score} pontos`;
-        scoreList.appendChild(li);
     });
 }

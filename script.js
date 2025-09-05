@@ -13,6 +13,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const gameRef = database.ref('game');
+console.log("Conexão com Firebase:", gameRef);
 
 // As 30 perguntas e respostas do jogo
 const questions = [
@@ -261,6 +262,7 @@ function checkAnswers(skip = false) {
         }, 3000);
     });
 }
+
 
 
 

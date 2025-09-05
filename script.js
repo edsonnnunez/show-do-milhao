@@ -14,10 +14,6 @@ const firebaseConfig = {
   measurementId: "G-21QGK1R8H1"
 };
 
-// Importa as funções necessárias da biblioteca do Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, remove, get, child } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
-
 // Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);

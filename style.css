@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+}
+
+#game-container {
+    background: radial-gradient(circle at center, #010a18 0%, #000 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid #00c6ff;
+    box-shadow: 0 0 20px #00c6ff;
+}
+
+.screen {
+    padding: 30px;
+    border-radius: 20px;
+    background-color: rgba(0, 10, 30, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 2px solid #00c6ff;
+    box-shadow: 0 0 30px rgba(0, 198, 255, 0.5);
+    width: 90%;
+    max-width: 1200px;
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.screen.active {
+    opacity: 1;
+}
+
+#game-title {
+    font-size: 4rem;
+    color: #00c6ff;
+    text-shadow: 0 0 10px #00c6ff, 0 0 20px #00c6ff;
+}
+
+.instruction-text {
+    font-size: 1.5rem;
+    color: #e0e0e0;
+}
+
+.game-section, .mobile-section {
+    width: 100%;
+    display: none;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.game-section.active, .mobile-section.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.neon-btn {
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: 2px solid #00c6ff;
+    border-radius: 50px;
+    background: #011627;
+    color: #00c6ff;
+    text-shadow: 0 0 5px #00c6ff;
+    box-shadow: 0 0 10px #00c6ff, inset 0 0 10px #00c6ff;
+    transition: background 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+.neon-btn:hover {
+    background: #012b4e;
+    box-shadow: 0 0 20px #00c6ff, inset 0 0 20px #00c6ff;
+    transform: scale(1.05);
+}
+
+.neon-btn:active {
+    transform: scale(0.98);
+}
+
+#control-buttons {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.control-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin: 0 10px;
+}
+
+.options-container, .mobile-options {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin-top: 20px;
+}
+
+.option-btn, .mobile-option-btn {
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+    min-height: 60px;
+    margin-bottom: 15px;
+    background-color: #011627;
+    color: #00c6ff;
+    border: 2px solid #00c6ff;
+}
+
+.option-btn:hover, .mobile-option-btn:hover {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px #ffd700, 0 0 25px #ffd700 inset;
+    background-color: #012b4e;
+}
+
+.correct-answer-highlight {
+    background-color: #38b000 !important;
+    animation: glow-green 1s infinite alternate;
+}
+
+.incorrect-answer-highlight {
+    background-color: #b00038 !important;
+}
+
+@keyframes glow-green {
+    from { box-shadow: 0 0 5px #38b000, 0 0 10px #38b000; }
+    to { box-shadow: 0 0 20px #38b000, 0 0 30px #38b000; }
+}
+
+#countdown-timer {
+    font-size: 3rem;
+    margin-top: 30px;
+    color: #ffd700;
+    text-shadow: 0 0 10px #ffea00;
+    animation: pulse-neon 1s infinite;
+}
+
+@keyframes pulse-neon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#qr-code {
+    margin: 20px;
+}
+
+#scoreboard, #pause-screen, #between-rounds-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#score-list, #partial-score-list, #round-score-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.5rem;
+    width: 80%;
+}
+
+#score-list li, #partial-score-list li, #round-score-list li {
+    background-color: rgba(0, 10, 30, 0.8);
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    color: #e0e0e0;
+    border: 1px solid #00c6ff;
+}
+
+/* Telas responsivas */
+#tv-screen {
+    display: none;
+}
+#mobile-screen {
+    max-width: 450px;
+}

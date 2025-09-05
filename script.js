@@ -58,6 +58,9 @@ const soundCorrect = new Audio('sounds/correct.mp3');
 const soundIncorrect = new Audio('sounds/incorrect.mp3');
 const soundCountdown = new Audio('sounds/countdown.mp3');
 const soundStart = new Audio('sounds/start_game.mp3');
+const soundWinRound = new Audio('sounds/win_round.mp3');
+const soundFinalWin = new Audio('sounds/final_win.mp3');
+
 
 // IDs das telas e botões
 const tvSections = {
@@ -241,15 +244,22 @@ function checkAnswers(skip = false) {
         const endOfRound = (nextQuestionIndex === 10 || nextQuestionIndex === 20 || nextQuestionIndex === 30);
         const endGame = (nextQuestionIndex >= questions.length);
 
-        document.getElementById(`option-${currentQuestion.ans}`).classList.add('correct-answer-highlight');
+        if(!skip) {
+            document.getElementById(`option-${currentQuestion.ans}`).classList.add('correct-answer-highlight');
+        }
         
         setTimeout(() => {
-            document.getElementById(`option-${currentQuestion.ans}`).classList.remove('correct-answer-highlight');
+            if(!skip) {
+                document.getElementById(`option-${currentQuestion.ans}`).classList.remove('correct-answer-highlight');
+            }
+
             gameRef.child('answers').remove();
             
             if (endGame) {
+                soundFinalWin.play();
                 gameRef.update({ status: 'finished' });
             } else if (endOfRound) {
+                soundWinRound.play();
                 gameRef.update({ currentQuestion: nextQuestionIndex, status: 'between-rounds', countdown: null });
             } else {
                 gameRef.update({ currentQuestion: nextQuestionIndex, countdown: 15 });

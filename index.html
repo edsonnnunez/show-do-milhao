@@ -8,44 +8,72 @@
 </head>
 <body>
 
-    <div id="tv-screen" class="screen">
-        <h1 id="game-title">Show do Milhão da Inovação</h1>
-        <div id="intro-tv" class="game-section active">
-            <p>Escaneie o QR Code para participar:</p>
-            <div id="qr-code"></div>
-            <button id="start-game-btn">Começar o Jogo</button>
-        </div>
-        <div id="game-tv" class="game-section">
-            <p id="question-number"></p>
-            <h2 id="question-text"></h2>
-            <div class="options-container">
-                <button id="option-a" class="option-btn"></button>
-                <button id="option-b" class="option-btn"></button>
-                <button id="option-c" class="option-btn"></button>
-            </div>
-            <div id="countdown-timer"></div>
-        </div>
-        <div id="scoreboard" class="game-section">
-            <h2>Placar Final</h2>
-            <ul id="score-list"></ul>
-        </div>
-    </div>
+    <div id="game-container">
 
-    <div id="mobile-screen" class="screen">
-        <div id="login-screen" class="mobile-section active">
-            <h2>Bem-vindo!</h2>
-            <input type="text" id="player-name-input" placeholder="Digite seu nome">
-            <button id="join-game-btn">Entrar no Jogo</button>
-        </div>
-        <div id="game-mobile" class="mobile-section">
-            <h2 id="mobile-question-text"></h2>
-            <div class="mobile-options">
-                <button class="mobile-option-btn" data-option="a"></button>
-                <button class="mobile-option-btn" data-option="b"></button>
-                <button class="mobile-option-btn" data-option="c"></button>
+        <div id="tv-screen" class="screen">
+            <h1 id="game-title">Show do Milhão da Inovação</h1>
+            
+            <div id="intro-tv" class="game-section active">
+                <p class="instruction-text">Escaneie o QR Code para participar:</p>
+                <div id="qr-code"></div>
+                <button id="start-game-btn" class="neon-btn">Começar o Jogo</button>
             </div>
-            <p id="waiting-message" style="display:none;">Aguardando os outros jogadores...</p>
+            
+            <div id="game-tv" class="game-section">
+                <p id="question-number"></p>
+                <h2 id="question-text"></h2>
+                <div class="options-container">
+                    <button id="option-a" class="option-btn neon-btn"></button>
+                    <button id="option-b" class="option-btn neon-btn"></button>
+                    <button id="option-c" class="option-btn neon-btn"></button>
+                </div>
+                <div id="countdown-timer"></div>
+            </div>
+
+            <div id="control-buttons">
+                <button id="pause-btn" class="control-btn neon-btn">Pausar</button>
+                <button id="skip-btn" class="control-btn neon-btn">Pular Pergunta</button>
+            </div>
+            
+            <div id="pause-screen" class="game-section">
+                <h2>Jogo Pausado</h2>
+                <button id="resume-btn" class="neon-btn">Continuar</button>
+                <button id="restart-btn" class="neon-btn">Reiniciar Jogo</button>
+                <h3>Placar Parcial</h3>
+                <ul id="partial-score-list"></ul>
+            </div>
+
+            <div id="between-rounds-screen" class="game-section">
+                <h2>Fim da Rodada!</h2>
+                <p>Preparem-se para a próxima rodada.</p>
+                <button id="next-round-btn" class="neon-btn">Próxima Rodada</button>
+                <h3>Placar Parcial</h3>
+                <ul id="round-score-list"></ul>
+            </div>
+
+            <div id="scoreboard" class="game-section">
+                <h2>Placar Final</h2>
+                <ul id="score-list"></ul>
+            </div>
         </div>
+
+        <div id="mobile-screen" class="screen">
+            <div id="login-screen" class="mobile-section active">
+                <h2>Bem-vindo!</h2>
+                <input type="text" id="player-name-input" placeholder="Digite seu nome">
+                <button id="join-game-btn" class="neon-btn">Entrar no Jogo</button>
+            </div>
+            <div id="game-mobile" class="mobile-section">
+                <h2 id="mobile-question-text"></h2>
+                <div class="mobile-options">
+                    <button class="mobile-option-btn neon-btn" data-option="a"></button>
+                    <button class="mobile-option-btn neon-btn" data-option="b"></button>
+                    <button class="mobile-option-btn neon-btn" data-option="c"></button>
+                </div>
+                <p id="waiting-message" style="display:none;">Aguardando os outros jogadores...</p>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>

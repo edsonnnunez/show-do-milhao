@@ -54,13 +54,10 @@ let gameStatus = 'waiting';
 let countdownInterval;
 
 // Sons do jogo
-const soundCorrect = new Audio('sounds/correct.mp3');
-const soundIncorrect = new Audio('sounds/incorrect.mp3');
 const soundCountdown = new Audio('sounds/countdown.mp3');
 const soundStart = new Audio('sounds/start_game.mp3');
 const soundWinRound = new Audio('sounds/win_round.mp3');
 const soundFinalWin = new Audio('sounds/final_win.mp3');
-
 
 // IDs das telas e botões
 const tvSections = {
@@ -231,11 +228,8 @@ function checkAnswers(skip = false) {
             for (const playerName in answers) {
                 const playerAnswer = answers[playerName].answer;
                 if (playerAnswer === currentQuestion.ans) {
-                    soundCorrect.play();
                     const score = players[playerName] ? players[playerName].score + 1000 : 1000;
                     gameRef.child('players').child(playerName).update({ score: score });
-                } else {
-                    soundIncorrect.play();
                 }
             }
         }
@@ -267,3 +261,4 @@ function checkAnswers(skip = false) {
         }, 3000);
     });
 }
+
